@@ -1,13 +1,16 @@
+mod base64;
 mod csv;
 mod genpass;
-
 use std::path::Path;
 
 use clap::Parser;
 
 use self::{csv::CsvOpts, genpass::GenPassOpts};
 
-pub use self::csv::OutputFormat;
+pub use self::{
+    base64::{Base64Format, Base64SubCommand},
+    csv::OutputFormat,
+};
 
 #[derive(Debug, Parser)]
 #[command(name = "rcli", version, author, about, long_about = None)]
@@ -22,12 +25,25 @@ pub enum SubCommand {
     Csv(CsvOpts),
     #[command(name = "genpass", about = "Generate a random password")]
     GenPass(GenPassOpts),
+    #[command(subcommand)]
+    Base64(Base64SubCommand),
 }
 
 fn verify_input_file(filename: &str) -> Result<String, &'static str> {
-    if Path::new(filename).exists() {
+    if "-" == filename || Path::new(filename).exists() {
         Ok(filename.into())
     } else {
         Err("File does not exist")
+    }
+}
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+
+    #[test]
+    fn test_verify_input_file() {
+        assert_eq!(verify_input_file("-"), Ok("-".into()));
+        assert_eq!(verify_input_file("*"), Err("File does not exist"))
     }
 }
