@@ -6,8 +6,8 @@ use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use clap::Parser;
 use rcli::{
     get_content, get_reader, process_csv, process_decode, process_encode, process_genpass,
-    process_text_key_generate, process_text_sign, process_text_verify, Base64SubCommand, Opts,
-    SubCommand, TextSubcommand,
+    process_text_decrypt, process_text_encrypt, process_text_key_generate, process_text_sign,
+    process_text_verify, Base64SubCommand, Opts, SubCommand, TextSubcommand,
 };
 
 fn main() -> anyhow::Result<()> {
@@ -59,6 +59,14 @@ fn main() -> anyhow::Result<()> {
                 for (k, v) in key {
                     fs::write(opts.output.join(k), v)?;
                 }
+            }
+            TextSubcommand::Encrypt(opts) => {
+                let mut reader: Box<dyn Read> = get_reader(&opts.input)?;
+                let _ = process_text_encrypt(&mut reader, opts.key);
+            }
+            TextSubcommand::Decrypt(opts) => {
+                let mut reader: Box<dyn Read> = get_reader(&opts.input)?;
+                let _ = process_text_decrypt(&mut reader, opts.key);
             }
         },
     }

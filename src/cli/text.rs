@@ -12,6 +12,10 @@ pub enum TextSubcommand {
     Verify(VerifyOpts),
     #[command(about = "Generate a random blake3 key or ed25519 key pair")]
     Generate(GenerateOpts),
+    #[command(about = "encrypt text")]
+    Encrypt(CryptOpts),
+    #[command(about = "decrypt text ")]
+    Decrypt(CryptOpts),
 }
 #[derive(Debug, Parser)]
 pub struct SignOpts {
@@ -40,6 +44,14 @@ pub struct GenerateOpts {
     pub output: PathBuf,
     #[arg(short,long,default_value = "Blake3",value_parser= parse_text_sign_format)]
     pub format: TextSignFormat,
+}
+
+#[derive(Debug, Parser)]
+pub struct CryptOpts {
+    #[arg(long)]
+    pub key: String,
+    #[arg(short,long,value_parser = verify_file, default_value = "-")]
+    pub input: String,
 }
 #[derive(Debug, Clone, Copy)]
 pub enum TextSignFormat {
