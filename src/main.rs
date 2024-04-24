@@ -6,8 +6,9 @@ use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use clap::Parser;
 use rcli::{
     get_content, get_reader, process_csv, process_decode, process_encode, process_genpass,
-    process_text_decrypt, process_text_encrypt, process_text_key_generate, process_text_sign,
-    process_text_verify, Base64SubCommand, Opts, SubCommand, TextSubcommand,
+    process_jwt_sign, process_jwt_verify, process_text_decrypt, process_text_encrypt,
+    process_text_key_generate, process_text_sign, process_text_verify, Base64SubCommand,
+    JwtSubcommand, Opts, SignOpts, SubCommand, TextSubcommand,
 };
 
 fn main() -> anyhow::Result<()> {
@@ -67,6 +68,21 @@ fn main() -> anyhow::Result<()> {
             TextSubcommand::Decrypt(opts) => {
                 let mut reader: Box<dyn Read> = get_reader(&opts.input)?;
                 let _ = process_text_decrypt(&mut reader, opts.key);
+            }
+        },
+        SubCommand::Jwt(cmd) => match cmd {
+            JwtSubcommand::Sign(opts) => {
+                let claims = SignOpts {
+                    sub: opts.sub,
+                    aud: opts.aud,
+                    exp: opts.exp,
+                };
+                let _ = process_jwt_sign(claims);
+            }
+            JwtSubcommand::Verify(opts) => {
+                let key = get_content(&opts.text)?;
+                let result = process_jwt_verify(String::from_utf8(key)?)?;
+                println!("{}", result);
             }
         },
     }

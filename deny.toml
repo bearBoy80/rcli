@@ -95,6 +95,7 @@ allow = [
     "Unicode-DFS-2016",
     "BSD-2-Clause",
     "BSD-3-Clause",
+     "ISC"
 ]
 # The confidence threshold for detecting a license from license text.
 # The higher the value, the more closely the license text must be to the
@@ -236,3 +237,10 @@ github = [""]
 gitlab = [""]
 # 1 or more bitbucket.org organizations to allow git sources for
 bitbucket = [""]
+
+[[licenses.clarify]]
+name = "ring"
+expression = "ISC"
+license-files = [
+    { path = "LICENSE", hash = 0xbd0eed23 }
+]
