@@ -5,13 +5,14 @@ use std::{fs, io::Read};
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use clap::Parser;
 use rcli::{
-    get_content, get_reader, process_csv, process_decode, process_encode, process_genpass,
-    process_jwt_sign, process_jwt_verify, process_text_decrypt, process_text_encrypt,
-    process_text_key_generate, process_text_sign, process_text_verify, Base64SubCommand,
-    JwtSubcommand, Opts, SignOpts, SubCommand, TextSubcommand,
+    get_content, get_reader, http_server, process_csv, process_decode, process_encode,
+    process_genpass, process_jwt_sign, process_jwt_verify, process_text_decrypt,
+    process_text_encrypt, process_text_key_generate, process_text_sign, process_text_verify,
+    Base64SubCommand, HttpCommand, JwtSubcommand, Opts, SignOpts, SubCommand, TextSubcommand,
 };
 
-fn main() -> anyhow::Result<()> {
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
     let opts = Opts::parse();
     match opts.cmd {
         SubCommand::Csv(opts) => {
@@ -83,6 +84,11 @@ fn main() -> anyhow::Result<()> {
                 let key = get_content(&opts.text)?;
                 let result = process_jwt_verify(String::from_utf8(key)?)?;
                 println!("{}", result);
+            }
+        },
+        SubCommand::Http(cmd) => match cmd {
+            HttpCommand::Serve(opts) => {
+                http_server(opts.dir, opts.port).await;
             }
         },
     }
