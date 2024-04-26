@@ -7,15 +7,16 @@ mod text;
 use std::path::{Path, PathBuf};
 
 use clap::Parser;
-
-use self::{csv::CsvOpts, genpass::GenPassOpts};
+use enum_dispatch::enum_dispatch;
 
 pub use self::{
-    base64::{Base64Format, Base64SubCommand},
+    base64::{Base64Format, Base64SubCommand, BaseDecode64Opts, BaseEncode64Opts},
+    csv::CsvOpts,
     csv::OutputFormat,
-    http::HttpCommand,
-    jwt::{JwtSubcommand, SignOpts},
-    text::{TextSignFormat, TextSubcommand},
+    genpass::GenPassOpts,
+    http::{HttpCommand, HttpServerOpts},
+    jwt::{JwtSignOpts, JwtSubcommand, JwtVerifyOpts},
+    text::*,
 };
 
 #[derive(Debug, Parser)]
@@ -26,6 +27,7 @@ pub struct Opts {
 }
 
 #[derive(Debug, Parser)]
+#[enum_dispatch(CmdExector)]
 pub enum SubCommand {
     #[command(name = "csv", about = "Show CSV, or convert CSV to other formats")]
     Csv(CsvOpts),
