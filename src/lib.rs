@@ -1,9 +1,11 @@
 mod cli;
+mod matrix;
 mod process;
 mod uitls;
 use anyhow::Result;
 pub use cli::*;
 use enum_dispatch::enum_dispatch;
+pub use matrix::*;
 pub use process::*;
 pub use uitls::*;
 
